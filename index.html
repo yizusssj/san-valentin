@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>¿Quieres ser mi San Valentín?</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg"></div>
+
+  <main class="wrap">
+    <section class="card" aria-label="Tarjeta de San Valentín">
+      <div class="badge">💘 San Valentín 💘</div>
+
+      <h1 class="title">Oye…</h1>
+      <p class="subtitle">
+        Tengo una pregunta importante para ti 👀
+      </p>
+
+      <div class="question">
+        <span class="sparkle">✨</span>
+        <h2>¿Quieres ser mi San Valentín?</h2>
+        <span class="sparkle">✨</span>
+      </div>
+
+      <p class="note" id="note">
+        Prometo: comida rica, risas, y muchos besos (si tú quieres) 🫶
+      </p>
+
+      <div class="actions">
+        <button class="btn btn-yes" id="yesBtn">SÍ 💖</button>
+        <button class="btn btn-no" id="noBtn">No 😶</button>
+      </div>
+
+      <footer class="footer">
+        <span class="small">Hecho con amor por</span>
+        <span class="name" id="fromName">[Tu nombre]</span>
+      </footer>
+    </section>
+
+    <!-- Modal de éxito -->
+    <div class="modal" id="modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <h3>AAAAA 😭💘</h3>
+        <p id="modalText">Sabía que dirías que sí. Te amo 💖</p>
+
+        <div class="gift">
+          <div class="heart">💗</div>
+          <div class="heart">💞</div>
+          <div class="heart">💓</div>
+        </div>
+
+        <button class="btn btn-close" id="closeBtn">Cerrar</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
