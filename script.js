@@ -30,7 +30,7 @@ async function startMusic() {
     audioOn = true;
     setAudioIcon();
   } catch (e) {
-    // Safari puede bloquear hasta interacción; lo intentamos cuando se pueda.
+    // Safari puede bloquear hasta interacción
   }
 }
 
@@ -87,9 +87,12 @@ if (modal) {
   });
 }
 
-// ESC para cerrar
+// ESC para cerrar modal (y secret también)
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeModal();
+  if (e.key === "Escape") {
+    closeModal();
+    closeSecret();
+  }
 });
 
 /* ---------------------------
@@ -145,16 +148,14 @@ function moveNoButton() {
   const rect = card.getBoundingClientRect();
   const btnRect = noBtn.getBoundingClientRect();
 
-  // área para moverse dentro de la card (aprox)
   const padding = 18;
   const maxX = rect.width - btnRect.width - padding * 2;
   const maxY = 160;
 
-  // movimiento suave y no tan loco
   const x = (Math.random() * maxX) - (maxX / 2);
   const y = (Math.random() * maxY) - (maxY / 2);
 
-  noBtn.style.transform = `translate(${clamp(x, -maxX/2, maxX/2)}px, ${clamp(y, -maxY/2, maxY/2)}px)`;
+  noBtn.style.transform = `translate(${clamp(x, -maxX / 2, maxX / 2)}px, ${clamp(y, -maxY / 2, maxY / 2)}px)`;
 
   tries++;
   if (tries === 5) noBtn.textContent = "¿Segura? 🥺";
@@ -165,10 +166,8 @@ function moveNoButton() {
   }
 }
 
-// escritorio
 if (noBtn) noBtn.addEventListener("mouseenter", moveNoButton);
 
-// móvil: cuando intenta tocar
 if (noBtn) {
   noBtn.addEventListener(
     "touchstart",
@@ -181,39 +180,80 @@ if (noBtn) {
 }
 
 /* ---------------------------
-   EASTER EGG: long press en Sí
-   (1s abre la pantalla sorpresa)
+   SORPRESA (pantalla secreta)
+   FIX: usamos hidden + style.display para que NUNCA se quede abierta
 ---------------------------- */
-let pressTimer = null;
+function applySecretVisibility() {
+  if (!secret) return;
+  // hidden a veces no gana vs CSS display, así que forzamos:
+  secret.style.display = secret.hidden ? "none" : "grid";
+}
 
 function openSecret() {
   if (!secret) return;
-  secret.hidden = false;
-  // cerrar modal si estuviera
   closeModal();
+  secret.hidden = false;
+  applySecretVisibility();
 }
 
 function closeSecret() {
   if (!secret) return;
   secret.hidden = true;
+  applySecretVisibility();
 }
 
+// arranque SIEMPRE cerrada
+if (secret) {
+  secret.hidden = true;
+  applySecretVisibility();
+}
+
+// botón volver
 if (backBtn) backBtn.addEventListener("click", closeSecret);
+
+// cerrar tocando afuera del cuadro (tap en el overlay)
+if (secret) {
+  secret.addEventListener("click", (e) => {
+    if (e.target === secret) closeSecret();
+  });
+}
+
+/* ---------------------------
+   EASTER EGG: long press en SÍ
+---------------------------- */
+let pressTimer = null;
+let longPressFired = false;
 
 if (yesBtn) {
   const startPress = () => {
+    longPressFired = false;
     clearTimeout(pressTimer);
-    pressTimer = setTimeout(openSecret, 1000);
+    pressTimer = setTimeout(() => {
+      longPressFired = true;
+      openSecret();
+    }, 900); // 0.9s se siente mejor que 1s
   };
+
   const endPress = () => {
     clearTimeout(pressTimer);
   };
 
+  // mouse
   yesBtn.addEventListener("mousedown", startPress);
   yesBtn.addEventListener("mouseup", endPress);
   yesBtn.addEventListener("mouseleave", endPress);
 
+  // touch
   yesBtn.addEventListener("touchstart", startPress, { passive: true });
   yesBtn.addEventListener("touchend", endPress);
   yesBtn.addEventListener("touchcancel", endPress);
+
+  // Extra: si se activó long press, evitamos que el click normal abra modal
+  yesBtn.addEventListener("click", (e) => {
+    if (longPressFired) {
+      e.preventDefault();
+      e.stopPropagation();
+      longPressFired = false;
+    }
+  }, true);
 }
