@@ -250,10 +250,17 @@ if (yesBtn) {
 
   // Extra: si se activó long press, evitamos que el click normal abra modal
   yesBtn.addEventListener("click", (e) => {
-    if (longPressFired) {
-      e.preventDefault();
-      e.stopPropagation();
-      longPressFired = false;
-    }
-  }, true);
+  if (longPressFired) {
+    // si fue long press, NO ejecutar click normal
+    e.preventDefault();
+    e.stopPropagation();
+    longPressFired = false;
+    return;
+  }
+
+  // click normal (tap rápido)
+  // esto asegura que el modal SI se abra
+  // (por si el navegador se pone mamón)
+  openModal();
+}, true);
 }
