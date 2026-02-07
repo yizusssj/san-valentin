@@ -205,23 +205,15 @@ if (noBtn) {
 }
 
 /* ---------------------------
-   BOTÓN SÍ: tap = modal | long press = sorpresa (ULTRA FIX)
+   BOTÓN SÍ: tap = modal | long press = sorpresa
 ---------------------------- */
 let yesPressTimer = null;
 let yesDidLongPress = false;
-let yesTapHandled = false;
-
-async function yesTapAction() {
-  await startMusic();
-  heartsBurst();
-  openModal();
-}
 
 if (yesBtn) {
   yesBtn.style.touchAction = "manipulation";
 
-  const startPress = (e) => {
-    yesTapHandled = false;
+  const startPress = () => {
     yesDidLongPress = false;
     clearTimeout(yesPressTimer);
 
@@ -231,40 +223,34 @@ if (yesBtn) {
     }, 900);
   };
 
-  const endPress = async (e) => {
+  const endPress = () => {
     clearTimeout(yesPressTimer);
 
-    // Si fue long press, NO hacer tap
-    if (yesDidLongPress) return;
+    // TAP normal
+    if (!yesDidLongPress) {
+      // 1) abre modal INMEDIATO
+      openModal();
 
-    // Tap normal
-    yesTapHandled = true;
-    await yesTapAction();
+      // forzar reflow (ayuda en móviles raros)
+      modal && modal.offsetHeight;
+
+      // 2) música y efectos SIN bloquear
+      startMusic();               // sin await
+      setTimeout(heartsBurst, 60);
+    }
   };
 
-  const cancelPress = () => clearTimeout(yesPressTimer);
-
-  // Pointer (si jala)
-  yesBtn.addEventListener("pointerdown", startPress);
-  yesBtn.addEventListener("pointerup", endPress);
-  yesBtn.addEventListener("pointercancel", cancelPress);
-  yesBtn.addEventListener("pointerleave", cancelPress);
-
-  // Touch fallback (iOS/Android raros)
+  // touch (móvil)
   yesBtn.addEventListener("touchstart", startPress, { passive: true });
   yesBtn.addEventListener("touchend", endPress);
-  yesBtn.addEventListener("touchcancel", cancelPress);
+  yesBtn.addEventListener("touchcancel", () => clearTimeout(yesPressTimer));
 
-  // Mouse fallback (PC)
-  yesBtn.addEventListener("mousedown", startPress);
-  yesBtn.addEventListener("mouseup", endPress);
-  yesBtn.addEventListener("mouseleave", cancelPress);
-
-  // Click de respaldo (por si no cayó pointerup/touchend)
-  yesBtn.addEventListener("click", async (e) => {
+  // desktop
+  yesBtn.addEventListener("click", (e) => {
     if (yesDidLongPress) return;
-    if (yesTapHandled) return; // ya se ejecutó en endPress
-    await yesTapAction();
+    openModal();
+    startMusic();
+    setTimeout(heartsBurst, 60);
   });
 }
 
