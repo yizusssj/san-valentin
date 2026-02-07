@@ -307,7 +307,8 @@ function openEnvelope(){
 }
 
 // Click/tap al sobre
-if (envelope) envelope.addEventListener("click", openEnvelope);
+if (envelope) envelope.addEventListener("pointerdown", openEnvelope);
+
 
 // Enter/Space para accesibilidad
 if (envelope) {

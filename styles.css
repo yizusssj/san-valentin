@@ -558,5 +558,12 @@ body{
   75%{ transform: translateX(-1px) scale(1.06); }
 }
 
+/* FIX: que nada bloquee el click del sobre */
+.envelope * {
+  pointer-events: none;
+}
+.envelope {
+  pointer-events: auto;
+}
 
 .secret[hidden] { display: none !important; }
