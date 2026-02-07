@@ -1,9 +1,4 @@
-alert("JS cargó ✅");
-console.log("envelope:", document.getElementById("envelope"));
-document.addEventListener("pointerdown", (e) => {
-  const el = e.target.closest?.("#envelope");
-  if (el) alert("Le picaste al sobre ✉️");
-});
+// ---------- refs ----------
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const modal = document.getElementById("modal");
@@ -15,12 +10,16 @@ const music = document.getElementById("bgMusic");
 const secret = document.getElementById("secret");
 const backBtn = document.getElementById("backBtn");
 
-// Personaliza nombre aquí
+const intro = document.getElementById("intro");
+const envelope = document.getElementById("envelope");
+const startBtn = document.getElementById("startBtn");
+const mainContent = document.getElementById("mainContent");
+const popSound = document.getElementById("popSound");
+
+// nombre
 if (fromName) fromName.textContent = "Yisus";
 
-/* ---------------------------
-   AUDIO (iPhone friendly)
----------------------------- */
+// ---------- AUDIO ----------
 let audioOn = false;
 
 function setAudioIcon() {
@@ -49,51 +48,62 @@ function stopMusic() {
 
 if (audioBtn) {
   audioBtn.addEventListener("click", async () => {
-    if (!music) return;
     if (audioOn) stopMusic();
     else await startMusic();
   });
 }
 setAudioIcon();
 
-/* ---------------------------
-   MODAL PRO
----------------------------- */
+// ---------- MODAL ----------
 function openModal() {
   if (!modal) return;
   modal.classList.add("show");
   modal.setAttribute("aria-hidden", "false");
 }
-
 function closeModal() {
   if (!modal) return;
   modal.classList.remove("show");
   modal.setAttribute("aria-hidden", "true");
 }
 
-if (yesBtn) {
-  yesBtn.addEventListener("click", async () => {
-    // música en interacción ✅
-    await startMusic();
-
-    // corazoncitos 🎉
-    heartsBurst();
-
-    // modal
-    openModal();
-  });
-}
-
 if (closeBtn) closeBtn.addEventListener("click", closeModal);
-
-// Cerrar tocando afuera del modal-card
 if (modal) {
   modal.addEventListener("click", (e) => {
     if (e.target === modal) closeModal();
   });
 }
 
-// ESC para cerrar modal (y secret también)
+// ---------- SECRET ----------
+function applySecretVisibility() {
+  if (!secret) return;
+  secret.style.display = secret.hidden ? "none" : "grid";
+}
+
+function openSecret() {
+  if (!secret) return;
+  closeModal();
+  secret.hidden = false;
+  applySecretVisibility();
+}
+
+function closeSecret() {
+  if (!secret) return;
+  secret.hidden = true;
+  applySecretVisibility();
+}
+
+if (secret) {
+  secret.hidden = true;
+  applySecretVisibility();
+
+  secret.addEventListener("click", (e) => {
+    if (e.target === secret) closeSecret();
+  });
+}
+
+if (backBtn) backBtn.addEventListener("click", closeSecret);
+
+// ESC
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     closeModal();
@@ -101,9 +111,7 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* ---------------------------
-   CONFETTI DE CORAZONES
----------------------------- */
+// ---------- HEART CONFETTI ----------
 function heartsBurst() {
   const amount = 26;
   for (let i = 0; i < amount; i++) {
@@ -126,28 +134,19 @@ function heartsBurst() {
         { transform: "translate(0,0) rotate(0deg)", opacity: 1 },
         { transform: `translate(${x}px, ${y}px) rotate(${rot}deg)`, opacity: 0 }
       ],
-      {
-        duration: 1100 + Math.random() * 450,
-        easing: "cubic-bezier(.2,.8,.2,1)"
-      }
+      { duration: 1100 + Math.random() * 450, easing: "cubic-bezier(.2,.8,.2,1)" }
     );
 
     setTimeout(() => s.remove(), 1700);
   }
 }
 
-/* ---------------------------
-   BOTÓN NO (smooth escape)
----------------------------- */
-function clamp(n, min, max) {
-  return Math.max(min, Math.min(max, n));
-}
-
+// ---------- NO BUTTON ----------
+function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 let tries = 0;
 
 function moveNoButton() {
   if (!noBtn) return;
-
   const card = document.querySelector(".card");
   if (!card) return;
 
@@ -161,7 +160,8 @@ function moveNoButton() {
   const x = (Math.random() * maxX) - (maxX / 2);
   const y = (Math.random() * maxY) - (maxY / 2);
 
-  noBtn.style.transform = `translate(${clamp(x, -maxX / 2, maxX / 2)}px, ${clamp(y, -maxY / 2, maxY / 2)}px)`;
+  noBtn.style.transform =
+    `translate(${clamp(x, -maxX / 2, maxX / 2)}px, ${clamp(y, -maxY / 2, maxY / 2)}px)`;
 
   tries++;
   if (tries === 5) noBtn.textContent = "¿Segura? 🥺";
@@ -173,60 +173,14 @@ function moveNoButton() {
 }
 
 if (noBtn) noBtn.addEventListener("mouseenter", moveNoButton);
-
 if (noBtn) {
-  noBtn.addEventListener(
-    "touchstart",
-    (e) => {
-      e.preventDefault();
-      moveNoButton();
-    },
-    { passive: false }
-  );
+  noBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    moveNoButton();
+  }, { passive: false });
 }
 
-/* ---------------------------
-   SORPRESA (pantalla secreta)
-   FIX: usamos hidden + style.display para que NUNCA se quede abierta
----------------------------- */
-function applySecretVisibility() {
-  if (!secret) return;
-  // hidden a veces no gana vs CSS display, así que forzamos:
-  secret.style.display = secret.hidden ? "none" : "grid";
-}
-
-function openSecret() {
-  if (!secret) return;
-  closeModal();
-  secret.hidden = false;
-  applySecretVisibility();
-}
-
-function closeSecret() {
-  if (!secret) return;
-  secret.hidden = true;
-  applySecretVisibility();
-}
-
-// arranque SIEMPRE cerrada
-if (secret) {
-  secret.hidden = true;
-  applySecretVisibility();
-}
-
-// botón volver
-if (backBtn) backBtn.addEventListener("click", closeSecret);
-
-// cerrar tocando afuera del cuadro (tap en el overlay)
-if (secret) {
-  secret.addEventListener("click", (e) => {
-    if (e.target === secret) closeSecret();
-  });
-}
-
-/* ---------------------------
-   EASTER EGG: long press en SÍ
----------------------------- */
+// ---------- YES (click + long press) ----------
 let pressTimer = null;
 let longPressFired = false;
 
@@ -237,87 +191,60 @@ if (yesBtn) {
     pressTimer = setTimeout(() => {
       longPressFired = true;
       openSecret();
-    }, 900); // 0.9s se siente mejor que 1s
+    }, 900);
   };
 
-  const endPress = () => {
-    clearTimeout(pressTimer);
-  };
+  const endPress = () => clearTimeout(pressTimer);
 
-  // mouse
   yesBtn.addEventListener("mousedown", startPress);
   yesBtn.addEventListener("mouseup", endPress);
   yesBtn.addEventListener("mouseleave", endPress);
 
-  // touch
   yesBtn.addEventListener("touchstart", startPress, { passive: true });
   yesBtn.addEventListener("touchend", endPress);
   yesBtn.addEventListener("touchcancel", endPress);
 
-  // Extra: si se activó long press, evitamos que el click normal abra modal
-  yesBtn.addEventListener("click", (e) => {
-  if (longPressFired) {
-    // si fue long press, NO ejecutar click normal
-    e.preventDefault();
-    e.stopPropagation();
-    longPressFired = false;
-    return;
-  }
-
-  // click normal (tap rápido)
-  // esto asegura que el modal SI se abra
-  // (por si el navegador se pone mamón)
-  openModal();
-}, true);
+  yesBtn.addEventListener("click", async (e) => {
+    if (longPressFired) {
+      e.preventDefault();
+      e.stopPropagation();
+      longPressFired = false;
+      return;
+    }
+    await startMusic();
+    heartsBurst();
+    openModal();
+  });
 }
 
-
-
-/* ---------------------------
-   INTRO SOBRE -> PÍCALE -> MAIN
----------------------------- */
-const intro = document.getElementById("intro");
-const envelope = document.getElementById("envelope");
-const startBtn = document.getElementById("startBtn");
-const mainContent = document.getElementById("mainContent");
-const popSound = document.getElementById("popSound");
-
-let envelopeOpened = false;
-
-function tryPlayPop(){
+// ---------- INTRO (envelope -> start -> main) ----------
+function tryPlayPop() {
   if (!popSound) return;
   try {
     popSound.volume = 0.7;
     popSound.currentTime = 0;
     popSound.play();
-  } catch(e){}
+  } catch (e) {}
 }
 
-function openEnvelope(){
+let envelopeOpened = false;
+
+function openEnvelope() {
   if (!envelope || envelopeOpened) return;
   envelopeOpened = true;
-  envelope.classList.add("open");
 
-  // pop sound (solo si existe pop.mp3)
+  envelope.classList.add("open");
   tryPlayPop();
 
-  // aparece botón PÍCALE después de abrir
-  setTimeout(() => {
-    if (!startBtn) return;
+  if (startBtn) {
     startBtn.classList.remove("hidden");
     startBtn.classList.add("shake");
-
-    // haptic en móvil si está disponible
-    if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
-  }, 520);
+  }
 }
 
-// Click/tap al sobre
-if (envelope) envelope.addEventListener("pointerdown", openEnvelope);
-
-
-// Enter/Space para accesibilidad
 if (envelope) {
+  envelope.addEventListener("click", openEnvelope);
+  envelope.addEventListener("pointerdown", openEnvelope);
   envelope.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -326,18 +253,10 @@ if (envelope) {
   });
 }
 
-async function startExperience(){
+async function startExperience() {
   if (intro) intro.classList.add("hidden");
   if (mainContent) mainContent.classList.remove("hidden");
-
-  // intenta iniciar música al entrar (Safari-friendly)
-  if (typeof startMusic === "function") {
-    await startMusic();
-  }
+  await startMusic();
 }
 
-// botón PÍCALE
-if (startBtn) {
-  startBtn.addEventListener("click", startExperience);
-}
-
+if (startBtn) startBtn.addEventListener("click", startExperience);
