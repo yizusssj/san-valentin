@@ -1,3 +1,4 @@
+alert("JS cargó ✅");
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const modal = document.getElementById("modal");
