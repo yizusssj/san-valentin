@@ -264,3 +264,73 @@ if (yesBtn) {
   openModal();
 }, true);
 }
+
+
+
+/* ---------------------------
+   INTRO SOBRE -> PÍCALE -> MAIN
+---------------------------- */
+const intro = document.getElementById("intro");
+const envelope = document.getElementById("envelope");
+const startBtn = document.getElementById("startBtn");
+const mainContent = document.getElementById("mainContent");
+const popSound = document.getElementById("popSound");
+
+let envelopeOpened = false;
+
+function tryPlayPop(){
+  if (!popSound) return;
+  try {
+    popSound.volume = 0.7;
+    popSound.currentTime = 0;
+    popSound.play();
+  } catch(e){}
+}
+
+function openEnvelope(){
+  if (!envelope || envelopeOpened) return;
+  envelopeOpened = true;
+  envelope.classList.add("open");
+
+  // pop sound (solo si existe pop.mp3)
+  tryPlayPop();
+
+  // aparece botón PÍCALE después de abrir
+  setTimeout(() => {
+    if (!startBtn) return;
+    startBtn.classList.remove("hidden");
+    startBtn.classList.add("shake");
+
+    // haptic en móvil si está disponible
+    if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+  }, 520);
+}
+
+// Click/tap al sobre
+if (envelope) envelope.addEventListener("click", openEnvelope);
+
+// Enter/Space para accesibilidad
+if (envelope) {
+  envelope.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openEnvelope();
+    }
+  });
+}
+
+async function startExperience(){
+  if (intro) intro.classList.add("hidden");
+  if (mainContent) mainContent.classList.remove("hidden");
+
+  // intenta iniciar música al entrar (Safari-friendly)
+  if (typeof startMusic === "function") {
+    await startMusic();
+  }
+}
+
+// botón PÍCALE
+if (startBtn) {
+  startBtn.addEventListener("click", startExperience);
+}
+

@@ -20,7 +20,51 @@
 <body>
   <div class="bg"></div>
 
-  <main class="wrap">
+  <!-- INTRO SOBRE -->
+<section class="intro" id="intro">
+  <div class="envelope" id="envelope">
+    <div class="envelope-top"></div>
+    <div class="envelope-body"></div>
+    <p class="envelope-text">Toca el sobre ✨</p>
+  </div>
+
+  <button class="btn big hidden" id="startBtn">
+    PÍCALE 💖
+  </button>
+</section>
+
+<!-- INTRO SOBRE -->
+<section class="intro" id="intro" aria-label="Intro">
+  <div class="intro-card">
+    <div class="intro-title">Antes de empezar… ✨</div>
+    <div class="intro-sub">Toca el sobre</div>
+
+    <div class="envelope" id="envelope" role="button" aria-label="Abrir sobre" tabindex="0">
+      <div class="env-shadow"></div>
+      <div class="env-back"></div>
+
+      <div class="env-paper" id="envPaper">
+        <div class="paper-heart">💖</div>
+        <div class="paper-text">Para ti</div>
+      </div>
+
+      <div class="env-front"></div>
+      <div class="env-flap" id="envFlap"></div>
+      <div class="env-seal">💗</div>
+    </div>
+
+    <button class="btn big hidden" id="startBtn">PÍCALE 💘</button>
+    <div class="intro-foot">*(prometo que vale la pena 😌)*</div>
+  </div>
+
+  <!-- pop sound (opcional) -->
+  <audio id="popSound" preload="auto">
+    <source src="./pop.mp3" type="audio/mpeg" />
+  </audio>
+</section>
+
+
+  <main class="wrap hidden" id="maincontent">
     <section class="card" aria-label="Tarjeta de San Valentín">
       <div class="badge reveal">💘 San Valentín 💘</div>
 
