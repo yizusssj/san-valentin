@@ -57,13 +57,37 @@ setAudioIcon();
 // ---------- MODAL ----------
 function openModal() {
   if (!modal) return;
-  modal.classList.add("show");
-  modal.setAttribute("aria-hidden", "false");
+
+  // fuerza visible sí o sí
+  modal.style.display = "grid";
+  modal.style.opacity = "0";
+  modal.style.visibility = "visible";
+  modal.style.pointerEvents = "auto";
+
+  // reflow duro (esto “despierta” Safari)
+  void modal.offsetHeight;
+
+  // ahora sí, aplica clase y opacidad en el siguiente frame
+  requestAnimationFrame(() => {
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+    modal.style.opacity = "1";
+  });
 }
+
 function closeModal() {
   if (!modal) return;
+
   modal.classList.remove("show");
   modal.setAttribute("aria-hidden", "true");
+  modal.style.opacity = "0";
+  modal.style.pointerEvents = "none";
+
+  // después de la anim, lo escondemos
+  setTimeout(() => {
+    modal.style.display = "none";
+    modal.style.visibility = "hidden";
+  }, 120);
 }
 
 if (closeBtn) closeBtn.addEventListener("click", closeModal);
