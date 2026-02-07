@@ -1,4 +1,9 @@
 alert("JS cargó ✅");
+console.log("envelope:", document.getElementById("envelope"));
+document.addEventListener("pointerdown", (e) => {
+  const el = e.target.closest?.("#envelope");
+  if (el) alert("Le picaste al sobre ✉️");
+});
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const modal = document.getElementById("modal");
